@@ -1,0 +1,5 @@
+package com.adaptnxt.repository;
+
+public interface CartItemRepository {
+
+}

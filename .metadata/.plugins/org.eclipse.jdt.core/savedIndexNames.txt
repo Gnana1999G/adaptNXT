@@ -1,0 +1,9 @@
+INDEX VERSION 1.134+G:\adaptnxt\.metadata\.plugins\org.eclipse.jdt.core
+1716020863.index
+1552158032.index
+4961128.index
+3803894794.index
+1338110905.index
+2867188837.index
+1865797976.index
+3549965706.index

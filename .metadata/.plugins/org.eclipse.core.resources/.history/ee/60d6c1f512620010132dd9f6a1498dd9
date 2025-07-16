@@ -1,0 +1,5 @@
+package com.adaptnxt.entity;
+
+public class Order {
+
+}

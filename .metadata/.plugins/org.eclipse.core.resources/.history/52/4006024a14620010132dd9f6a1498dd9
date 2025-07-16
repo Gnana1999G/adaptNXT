@@ -1,0 +1,5 @@
+package com.adaptnxt.dto;
+
+public class LoginRequest {
+
+}

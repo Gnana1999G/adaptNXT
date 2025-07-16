@@ -1,0 +1,5 @@
+package com.adaptnxt.security;
+
+public class JwtFilter {
+
+}

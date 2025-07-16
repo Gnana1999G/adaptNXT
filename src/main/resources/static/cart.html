@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cart - AdaptNXT E-commerce</title>
+</head>
+<body>
+    <h2>Your Cart</h2>
+    <button onclick="logout()">Logout</button>
+    <div id="cartItems"></div>
+    <button onclick="placeOrder()">Place Order</button>
+
+    <h3>Shipping Details</h3>
+    <form id="orderForm">
+        <label>Street: <input type="text" id="street" required></label><br>
+        <label>City: <input type="text" id="city" required></label><br>
+        <label>Pincode: <input type="text" id="pincode" required></label><br>
+    </form>
+
+    <script>
+    const token = localStorage.getItem('token');
+    if (!token) window.location.href = 'login.html';
+
+    async function loadCart() {
+        const res = await fetch('/cart', {
+            headers: { 'Authorization': 'Bearer ' + token }
+        });
+        if (res.ok) {
+            const cartItems = await res.json();
+            const cartDiv = document.getElementById('cartItems');
+            cartDiv.innerHTML = '';
+            cartItems.forEach(item => {
+                const div = document.createElement('div');
+                div.innerHTML = `${item.product.name} - Qty: ${item.quantity} 
+                <button onclick="removeFromCart(${item.id})">Remove</button>`;
+                cartDiv.appendChild(div);
+            });
+        } else {
+            alert('Failed to load cart');
+        }
+    }
+
+    async function removeFromCart(cartItemId) {
+        const res = await fetch('/cart/remove?cartItemId=' + cartItemId, {
+            method: 'DELETE',
+            headers: { 'Authorization': 'Bearer ' + token }
+        });
+        if (res.ok) {
+            alert('Removed from cart');
+            loadCart();
+        } else {
+            alert('Failed to remove');
+        }
+    }
+
+    async function placeOrder() {
+        const street = document.getElementById('street').value;
+        const city = document.getElementById('city').value;
+        const pincode = document.getElementById('pincode').value;
+
+        const res = await fetch('/order/place', {
+            method: 'POST',
+            headers: {
+                'Authorization': 'Bearer ' + token,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ street, city, pincode })
+        });
+
+        if (res.ok) {
+            alert('Order placed successfully');
+            window.location.href = 'products.html';
+        } else {
+            const err = await res.text();
+            alert('Failed to place order: ' + err);
+        }
+    }
+
+    function logout() {
+        localStorage.removeItem('token');
+        localStorage.removeItem('username');
+        window.location.href = 'login.html';
+    }
+
+    window.onload = () => loadCart();
+    </script>
+</body>
+</html>

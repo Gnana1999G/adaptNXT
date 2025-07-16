@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Products - AdaptNXT E-commerce</title>
+</head>
+<body>
+    <h2>Products</h2>
+    <input type="text" id="search" placeholder="Search by name or category"/>
+    <button onclick="loadProducts()">Search</button>
+    <button onclick="logout()">Logout</button>
+    <div id="products"></div>
+
+    <script>
+    const token = localStorage.getItem('token');
+    if (!token) window.location.href = 'login.html';
+
+    async function loadProducts(page=0) {
+        const search = document.getElementById('search').value;
+        const res = await fetch(`/products?page=${page}&size=10&search=${encodeURIComponent(search)}`, {
+            headers: { 'Authorization': 'Bearer ' + token }
+        });
+        if (res.ok) {
+            const data = await res.json();
+            const productsDiv = document.getElementById('products');
+            productsDiv.innerHTML = '';
+            data.content.forEach(p => {
+                const div = document.createElement('div');
+                div.innerHTML = `<b>${p.name}</b> - ${p.category} - $${p.price.toFixed(2)}
+                <button onclick="addToCart(${p.id})">Add to Cart</button>`;
+                productsDiv.appendChild(div);
+            });
+        } else {
+            alert('Failed to load products');
+        }
+    }
+
+    async function addToCart(productId) {
+        const res = await fetch('/cart/add?productId=' + productId + '&quantity=1', {
+            method: 'POST',
+            headers: { 'Authorization': 'Bearer ' + token }
+        });
+        if (res.ok) {
+            alert('Added to cart');
+        } else {
+            alert('Failed to add to cart');
+        }
+    }
+
+    function logout() {
+        localStorage.removeItem('token');
+        localStorage.removeItem('username');
+        window.location.href = 'login.html';
+    }
+
+    window.onload = () => loadProducts();
+    </script>
+</body>
+</html>
